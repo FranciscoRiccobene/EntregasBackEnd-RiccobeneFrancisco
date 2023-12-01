@@ -3,7 +3,7 @@ import fs from "fs";
 class CartManager {
   constructor() {
     this.carts = this.readCartsFromFile();
-    this.path = "carrito.json";
+    this.path = "src/carrito.json";
   }
 
   async writeCartsToFile(carts) {

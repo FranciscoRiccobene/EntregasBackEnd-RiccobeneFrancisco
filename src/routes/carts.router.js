@@ -1,12 +1,14 @@
 import express from "express";
-import CartManager from "../CartManager.js";
+import Carts from "../models/carts.model.js";
+
 const cartRouter = express.Router();
-const cartManager = new CartManager();
 
 cartRouter.post("/", async (req, res) => {
   try {
-    const newCart = await cartManager.createCart();
-    res.status(201).json(newCart);
+    const newCart = new Carts(req.body);
+    const savedCart = await newCart.save();
+
+    res.status(201).json(savedCart);
   } catch (err) {
     console.error(`Error creating cart ${err}`);
     res.status(500).json({ message: "Error creating cart" });
@@ -14,45 +16,144 @@ cartRouter.post("/", async (req, res) => {
 });
 
 cartRouter.get("/:cid", async (req, res) => {
-  const cartId = parseInt(req.params.cid);
   try {
-    const cart = await cartManager.getCartById(cartId);
+    const cartId = req.params.cid;
+
+    const cart = await Carts.findById(cartId).populate("products.product");
     if (!cart) {
-      res.status(404).json({ message: "Cart not found" });
-    } else {
-      res.status(200).json(cart.products);
+      return res.status(404).json({ message: "Cart not found" });
     }
+
+    res.status(200).json(cart);
   } catch (err) {
-    console.error(`Error getting cart ${err}`);
+    console.error(`Error getting cart ${err.message}`);
     res.status(500).json({ message: "Error getting cart" });
   }
 });
 
 cartRouter.post("/:cid/product/:pid", async (req, res) => {
-  const cartId = parseInt(req.params.cid);
-  const productId = parseInt(req.params.pid);
-  const quantity = req.body.quantity || 1;
-
-  if (isNaN(cartId) || isNaN(productId)) {
-    res.status(400).json({ message: "Invalid cart ID or product ID" });
-    return;
-  }
+  const { cid, pid } = req.params;
+  const { quantity } = req.body;
 
   try {
-    const updatedCart = await cartManager.addProductToCart(
-      cartId,
-      productId,
-      quantity
-    );
+    const cart = await Carts.findById(cid);
 
-    if (updatedCart) {
-      res.status(200).json(updatedCart.products);
-    } else {
-      res.status(404).json({ message: "Cart not found" });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
     }
+
+    const existingProduct = cart.products.find((p) => p.product.equals(pid));
+
+    if (existingProduct) {
+      existingProduct.quantity += quantity || 1;
+    } else {
+      cart.products.push({ product: pid, quantity: quantity || 1 });
+    }
+
+    const updatedCart = await cart.save();
+
+    res.status(200).json(updatedCart);
   } catch (err) {
     console.error(`Error adding product to cart: ${err}`);
     res.status(500).json({ message: "Error adding product to cart" });
+  }
+});
+
+cartRouter.delete("/:cid/product/:pid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
+
+    const cart = await Carts.findById(cartId);
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    const productIndex = cart.products.findIndex((p) =>
+      p.product.equals(productId)
+    );
+    if (productIndex === -1) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    cart.products.splice(productIndex, 1);
+
+    await cart.save();
+
+    res.status(200).json({ message: "Product removed successfully" });
+  } catch (error) {
+    console.error(`Internal server error: ${error.message}`);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+cartRouter.put("/:cid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const newProducts = req.body.products;
+
+    const cart = await Carts.findById(cartId);
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    cart.products = newProducts;
+
+    await cart.save();
+
+    res.status(200).json({ message: "Cart updated successfully" });
+  } catch (error) {
+    console.error(`Internal server error: ${error.message}`);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+cartRouter.put("/:cid/products/:pid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
+    const newQuantity = req.body.quantity;
+
+    const cart = await Carts.findById(cartId);
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    const productToUpdate = cart.products.find((p) =>
+      p.product.equals(productId)
+    );
+    if (!productToUpdate) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    productToUpdate.quantity = newQuantity;
+
+    await cart.save();
+
+    res.status(200).json({ message: "Product quantity updated succesfully" });
+  } catch (error) {
+    console.error(`Internal server error: ${error.message}`);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+cartRouter.delete("/:cid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+
+    const cart = await Carts.findById(cartId);
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    cart.products = [];
+
+    await cart.save();
+
+    res.status(200).json({ message: "All products removed from Cart" });
+  } catch (error) {
+    console.error(`Internal server error: ${error.message}`);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 

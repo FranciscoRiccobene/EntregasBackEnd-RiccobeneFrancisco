@@ -1,31 +1,62 @@
 import express from "express";
-import ProductManager from "../ProductManager.js";
+import Products from "../models/products.model.js";
+
 const productRouter = express.Router();
-const productManager = new ProductManager();
 
 productRouter.get("/", async (req, res) => {
-  const { limit } = req.query;
-
   try {
-    const products = await productManager.getProducts();
+    const { limit = 10, page = 1, sort, query } = req.query;
 
-    if (limit) {
-      const limitedProducts = products.slice(0, parseInt(limit));
-      res.status(200).json({ products: limitedProducts });
-    } else {
-      res.status(200).json({ products });
-    }
+    const options = {
+      limit: parseInt(limit),
+      page: parseInt(page),
+      sort:
+        sort === "desc" ? { price: -1 } : sort === "asc" ? { price: 1 } : undefined,
+    };
+
+    const filter = query
+      ? query === "stock"
+        ? { stock: { $gt: 0 } }
+        : {
+            $or: [
+              { title: new RegExp(query, "i") },
+              { category: new RegExp(query, "i") },
+            ],
+          }
+      : {};
+
+    const result = await Products.paginate(filter, options);
+
+    const queryLink = query ? `&query=${query}` : "";
+    const sortLink = sort ? `&sort=${sort}` : "";
+
+    const response = {
+      status: "success",
+      payload: result.docs,
+      totalPages: result.totalPages,
+      prevPage: result.prevPage,
+      nextPage: result.nextPage,
+      page: result.page,
+      hasPrevPage: result.hasPrevPage,
+      hasNextPage: result.hasNextPage,
+      prevLink: result.hasPrevPage
+        ? `/api/products?page=${result.prevPage}&limit=${limit}${queryLink}${sortLink}`
+        : null,
+      nextLink: result.hasNextPage
+        ? `/api/products?page=${result.nextPage}&limit=${limit}${queryLink}${sortLink}`
+        : null,
+    };
+
+    res.status(200).json(response);
   } catch (err) {
-    console.error(`Error reading products file: ${err}`);
-    res.status(500).json({ message: "Internal Serve Error" });
+    console.error(`Error reading products from database: ${err}`);
+    res.status(500).json({ status: "error", message: "Internal Server Error" });
   }
 });
 
 productRouter.get("/:pid", async (req, res) => {
-  const productId = parseInt(req.params.pid);
-
   try {
-    const obtainedProduct = await productManager.getProductById(productId);
+    const obtainedProduct = await Products.findById(req.params.pid);
 
     if (obtainedProduct) {
       res.status(200).json({ product: obtainedProduct });
@@ -34,57 +65,35 @@ productRouter.get("/:pid", async (req, res) => {
     }
   } catch (err) {
     console.error(`Error reading products file: ${err}`);
-    res.status(500).json({ message: "Internal Serve Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
 productRouter.post("/", async (req, res) => {
+  const { title, description, code, price, status, stock, category } = req.body;
+
+  if (
+    !title ||
+    !description ||
+    !code ||
+    !price ||
+    !status ||
+    !stock ||
+    !category
+  ) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  const existingProduct = await Products.findOne({ code });
+  if (existingProduct) {
+    return res.status(400).json({ message: "The code is already in use" });
+  }
+
+  const products = new Products(req.body);
+
   try {
-    const products = await productManager.getProducts();
+    const newProduct = await products.save();
 
-    const {
-      title,
-      description,
-      code,
-      price,
-      status,
-      stock,
-      category,
-      thumbnails,
-    } = req.body;
-
-    if (
-      !title ||
-      !description ||
-      !code ||
-      !price ||
-      !status ||
-      !stock ||
-      !category
-    ) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    const verifyCode = products.find((product) => product.code === code);
-    if (verifyCode) {
-      return res.status(400).json({ message: "The code is already in use" });
-    }
-
-    const id = products.length + 1;
-    const newProduct = {
-      id: id,
-      title: title,
-      description: description,
-      code: code,
-      price: price,
-      status: status,
-      stock: stock,
-      category: category,
-      thumbnails: thumbnails || [],
-    };
-
-    products.push(newProduct);
-    await productManager.writeProductsToFile(products);
     res.status(201).json(newProduct);
   } catch (err) {
     console.error(`Error adding product: ${err}`);
@@ -93,16 +102,17 @@ productRouter.post("/", async (req, res) => {
 });
 
 productRouter.put("/:pid", async (req, res) => {
-  const productId = parseInt(req.params.pid);
-  const uptdatedFields = req.body;
-
   try {
-    const data = await productManager.updateProduct(productId, uptdatedFields);
+    const productToUpdate = await Products.findOneAndUpdate(
+      { _id: req.params.pid },
+      req.body,
+      { new: true }
+    );
 
-    if (data === "Product updated") {
-      res.status(201).json({ message: "Product updated" });
-    } else if (data === "Product not found") {
+    if (!productToUpdate) {
       res.status(404).json({ message: "Product not found" });
+    } else {
+      res.status(200).json(productToUpdate);
     }
   } catch (err) {
     console.error(`Error updating product: ${err}`);
@@ -111,15 +121,13 @@ productRouter.put("/:pid", async (req, res) => {
 });
 
 productRouter.delete("/:pid", async (req, res) => {
-  const productId = parseInt(req.params.pid);
-
   try {
-    const data = await productManager.deleteProduct(productId);
+    const productToDelete = await Products.findByIdAndDelete(req.params.pid);
 
-    if (data === "Product deleted") {
-      res.status(204).json({ message: "Product deleted" });
-    } else if (data === "Product not found") {
+    if (!productToDelete) {
       res.status(404).json({ message: "Product not found" });
+    } else {
+      res.status(204).json({ message: "Product deleted" });
     }
   } catch (err) {
     console.error(`Error deleting product: ${err}`);

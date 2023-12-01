@@ -3,7 +3,7 @@ import fs from "fs";
 class ProductManager {
   constructor() {
     this.products = this.readProductsFromFile();
-    this.path = "products.json";
+    this.path = "src/products.json";
   }
 
   async writeProductsToFile(products) {
