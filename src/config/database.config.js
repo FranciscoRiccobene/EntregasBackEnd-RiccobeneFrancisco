@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
+import "dotenv/config";
 
-mongoose.connect(
-  "mongodb+srv://franriccobene463352:T9L7sXqW09RRUcC2@codercluster.h9gmu7u.mongodb.net/?retryWrites=true&w=majority",
-  { dbName: "eccomerce" }
-);
+mongoose.connect(process.env.MONGO_DB, { dbName: "eccomerce" });
 
 const db = mongoose.connection;
 

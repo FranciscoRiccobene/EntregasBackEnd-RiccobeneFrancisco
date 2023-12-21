@@ -5,7 +5,12 @@
     <title>Lista de Productos</title>
   </head>
   <body>
-    <h1>Productos</h1>
+    <div>
+      <h1>Productos</h1>
+      <form action="/api/sessions/logout" method="post">
+        <button type="submit">Logout</button>
+      </form>
+    </div>
     <div>
       <ul>
         {{#each products.payload}}
@@ -19,13 +24,11 @@
               <strong>Stock:</strong>
               {{this.stock}}</p>
             <a href="/products/{{this._id}}">Ver detalles</a>
+            <br />
+            <br />
             <form action="/api/carts" method="POST">
-              <input
-                type="hidden"
-                name="products[0][product]"
-                value="{{this._id}}"
-              />
-              <input type="hidden" name="products[0][quantity]" value="1" />
+              <input type="hidden" name="productId" value="{{this._id}}" />
+              <input type="hidden" name="quantity" value="1" />
               <button type="submit">Agregar al carrito</button>
             </form>
           </li>

@@ -1,0 +1,21 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bienvenido Usuario</title>
+  </head>
+  <body>
+    {{#if user}}
+      <h1>Bienvenido, {{user.user.first_name}} {{user.user.last_name}}!</h1>
+      <h2>Email: {{user.user.email}}</h2>
+      <h3>Edad: {{user.user.age}}</h3>
+      <h3>Tu rol es: {{user.user.role}}</h3>
+    {{/if}}
+    <div>
+      <p>Ir a la sección de productos - <a href="/products">Productos</a></p>
+    </div>
+    <form action="/api/sessions/logout" method="post">
+      <button type="submit">Logout</button>
+    </form>
+  </body>
+</html>

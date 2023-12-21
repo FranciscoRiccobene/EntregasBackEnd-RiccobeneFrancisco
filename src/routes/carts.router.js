@@ -1,14 +1,36 @@
 import express from "express";
 import Carts from "../models/carts.model.js";
+import { passportCall } from "../utils.js";
 
 const cartRouter = express.Router();
 
-cartRouter.post("/", async (req, res) => {
+cartRouter.post("/", passportCall("jwt"), async (req, res) => {
   try {
-    const newCart = new Carts(req.body);
-    const savedCart = await newCart.save();
+    const { productId, quantity } = req.body;
+    const user = req.user;
 
-    res.status(201).json(savedCart);
+    if (!user.user.cart)
+      return res.status(400).send({ message: "User doesn't have a cart" });
+
+    const cartId = user.user.cart;
+    const cart = await Carts.findById(cartId);
+
+    const existingProduct = cart.products.find(
+      (product) => product.product && product.product.toString() === productId
+    );
+
+    if (existingProduct) {
+      existingProduct.quantity += parseInt(quantity, 10) || 1;
+    } else {
+      cart.products.push({
+        product: productId,
+        quantity: parseInt(quantity, 10) || 1,
+      });
+    }
+
+    await cart.save();
+
+    res.status(201).json({ message: "Products added to cart successfully" });
   } catch (err) {
     console.error(`Error creating cart ${err}`);
     res.status(500).json({ message: "Error creating cart" });

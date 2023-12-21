@@ -13,8 +13,8 @@
       <p><strong>Stock:</strong> {{product.stock}}</p>
       <p><strong>Categoría:</strong> {{product.category}}</p>
       <form action="/api/carts" method="POST">
-        <input type="hidden" name="products[0][product]" value="{{product._id}}" />
-        <input type="hidden" name="products[0][quantity]" value="1" />
+        <input type="hidden" name="productId" value="{{product._id}}" />
+        <input type="hidden" name="quantity" value="1" />
         <button type="submit">Agregar al carrito</button>
       </form>
       <a href="/products">Volver a la lista de productos</a>

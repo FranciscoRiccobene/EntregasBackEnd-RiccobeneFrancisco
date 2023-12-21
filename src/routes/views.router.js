@@ -1,4 +1,5 @@
 import express from "express";
+import { passportCall } from "../utils.js";
 import Products from "../models/products.model.js";
 import Carts from "../models/carts.model.js";
 
@@ -6,6 +7,18 @@ const viewRouter = express.Router();
 
 viewRouter.get("/", (req, res) => {
   res.render("index", {});
+});
+
+viewRouter.get("/register", (req, res) => {
+  res.render("index", { layout: "register" });
+});
+
+viewRouter.get("/login", (req, res) => {
+  res.render("index", { layout: "login" });
+});
+
+viewRouter.get("/current", passportCall("jwt"), (req, res) => {
+  res.render("index", { layout: "current", user: req.user});
 });
 
 viewRouter.get("/products", async (req, res) => {
@@ -75,7 +88,7 @@ viewRouter.get("/products/:pid", async (req, res) => {
 
     res.render("index", { layout: "productsDetail", product: product });
   } catch (error) {
-    console.error(`Error reading products file: ${err}`);
+    console.error(`Error reading products file: ${error}`);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
