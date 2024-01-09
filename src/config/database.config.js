@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import "dotenv/config";
+import config from "./dotenv.config.js";
 
-mongoose.connect(process.env.MONGO_DB, { dbName: "eccomerce" });
+mongoose.connect(config.MONGO_DB, { dbName: "eccomerce" });
 
 const db = mongoose.connection;
 

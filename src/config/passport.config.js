@@ -1,6 +1,6 @@
 import passport from "passport";
 import jwt from "passport-jwt";
-import "dotenv/config";
+import config from "./dotenv.config.js";
 
 const JWTStrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
@@ -19,7 +19,7 @@ const initializePassport = () => {
     new JWTStrategy(
       {
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: process.env.SECRET_KEY,
+        secretOrKey: config.SECRET_KEY,
       },
       async (jwt_payload, done) => {
         try {

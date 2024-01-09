@@ -1,11 +1,8 @@
 import { Router } from "express";
 import User from "../models/user.model.js";
 import Carts from "../models/carts.model.js";
-import {
-  createHash,
-  isValidPassword,
-  handleAuthentication,
-} from "../utils.js";
+import config from "../config/dotenv.config.js";
+import { createHash, isValidPassword, handleAuthentication } from "../utils.js";
 
 const authRouter = Router();
 
@@ -46,13 +43,13 @@ authRouter.post("/register", async (req, res) => {
 authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+    const ADMIN_EMAIL = config.ADMIN_EMAIL;
+    const ADMIN_PASSWORD = config.ADMIN_PASSWORD;
 
     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       const user = {
         first_name: "Admin",
-        email: "adminCoder@coder.com",
+        email: ADMIN_EMAIL,
         role: "admin",
       };
 
