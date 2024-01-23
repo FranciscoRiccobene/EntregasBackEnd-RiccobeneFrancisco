@@ -46,4 +46,16 @@ export const handleAuthentication = (user, res) => {
     .send({ message: "Success" });
 };
 
+export const authorizationMiddleware = (allowedRoles) => {
+  return (req, res, next) => {
+    const currentUser = req.user;
+
+    if (!currentUser || !allowedRoles.includes(currentUser.user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    next();
+  };
+};
+
 export default __dirname;

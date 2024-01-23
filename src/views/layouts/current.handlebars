@@ -6,10 +6,9 @@
   </head>
   <body>
     {{#if user}}
-      <h1>Bienvenido, {{user.user.first_name}} {{user.user.last_name}}!</h1>
-      <h2>Email: {{user.user.email}}</h2>
-      <h3>Edad: {{user.user.age}}</h3>
-      <h3>Tu rol es: {{user.user.role}}</h3>
+      <h1>Bienvenido, {{user.first_name}} {{user.last_name}}!</h1>
+      <h3>Email: {{user.email}}</h3>
+      <h3>Tu rol es: {{user.role}}</h3>
     {{/if}}
     <div>
       <p>Ir a la sección de productos - <a href="/products">Productos</a></p>

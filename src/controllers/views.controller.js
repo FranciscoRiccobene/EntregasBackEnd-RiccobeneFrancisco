@@ -1,27 +1,41 @@
 import express from "express";
+import ProductsDAO from "../dao/Products.dao.js";
+import CartsDAO from "../dao/Carts.dao.js";
+import ProductsRepository from "../repositories/Products.repository.js";
+import CartsRepository from "../repositories/Carts.repository.js";
 import { passportCall } from "../utils.js";
-import Products from "../models/products.model.js";
-import Carts from "../models/carts.model.js";
 
-const viewRouter = express.Router();
+const router = express.Router();
+const productsDAO = new ProductsDAO();
+const cartsDAO = new CartsDAO();
+const productsRepository = new ProductsRepository(productsDAO);
+const cartsRepository = new CartsRepository(cartsDAO);
 
-viewRouter.get("/", (req, res) => {
+router.get("/", (req, res) => {
   res.render("index", {});
 });
 
-viewRouter.get("/register", (req, res) => {
+router.get("/register", (req, res) => {
   res.render("index", { layout: "register" });
 });
 
-viewRouter.get("/login", (req, res) => {
+router.get("/login", (req, res) => {
   res.render("index", { layout: "login" });
 });
 
-viewRouter.get("/current", passportCall("jwt"), (req, res) => {
-  res.render("index", { layout: "current", user: req.user});
+router.get("/current", passportCall("jwt"), (req, res) => {
+  const userDTO = {
+    first_name: req.user.user.first_name,
+    last_name: req.user.user.last_name,
+    email: req.user.user.email,
+    age: req.user.user.age,
+    role: req.user.user.role,
+  };
+
+  res.render("index", { layout: "current", user: userDTO });
 });
 
-viewRouter.get("/products", async (req, res) => {
+router.get("/products", async (req, res) => {
   try {
     const { limit = 10, page = 1, sort, query } = req.query;
 
@@ -48,40 +62,20 @@ viewRouter.get("/products", async (req, res) => {
           }
       : {};
 
-    const result = await Products.paginate(filter, options);
+    const result = await productsRepository.productsPaginate(filter, options);
 
-    const queryLink = query ? `&query=${query}` : "";
-    const sortLink = sort ? `&sort=${sort}` : "";
-
-    const response = {
-      status: "success",
-      payload: result.docs,
-      totalPages: result.totalPages,
-      prevPage: result.prevPage,
-      nextPage: result.nextPage,
-      page: result.page,
-      hasPrevPage: result.hasPrevPage,
-      hasNextPage: result.hasNextPage,
-      prevLink: result.hasPrevPage
-        ? `/products?page=${result.prevPage}&limit=${limit}${queryLink}${sortLink}`
-        : null,
-      nextLink: result.hasNextPage
-        ? `/products?page=${result.nextPage}&limit=${limit}${queryLink}${sortLink}`
-        : null,
-    };
-
-    res.render("index", { layout: "products", products: response });
+    res.render("index", { layout: "products", products: result });
   } catch (err) {
     console.error(`Error reading products file: ${err}`);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-viewRouter.get("/products/:pid", async (req, res) => {
+router.get("/products/:pid", async (req, res) => {
   try {
     const productId = req.params.pid;
 
-    const product = await Products.findById(productId).lean();
+    const product = await productsRepository.findProductWithLean(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -93,13 +87,15 @@ viewRouter.get("/products/:pid", async (req, res) => {
   }
 });
 
-viewRouter.get("/carts/:cid", async (req, res) => {
+router.get("/carts/:cid", async (req, res) => {
   try {
     const cartId = req.params.cid;
 
-    const cart = await Carts.findById(cartId)
-      .populate("products.product")
-      .lean();
+    const cart = await cartsRepository.findCartWithPopulateAndLean(
+      cartId,
+      "products.product"
+    );
+
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
@@ -111,4 +107,4 @@ viewRouter.get("/carts/:cid", async (req, res) => {
   }
 });
 
-export { viewRouter };
+export default router;

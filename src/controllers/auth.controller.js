@@ -1,12 +1,18 @@
 import { Router } from "express";
-import User from "../models/user.model.js";
-import Carts from "../models/carts.model.js";
+import UserDAO from "../dao/User.dao.js";
+import CartsDAO from "../dao/Carts.dao.js";
+import UserRepository from "../repositories/User.repository.js";
+import CartsRepository from "../repositories/Carts.repository.js";
 import config from "../config/dotenv.config.js";
 import { createHash, isValidPassword, handleAuthentication } from "../utils.js";
 
-const authRouter = Router();
+const router = Router();
+const userDAO = new UserDAO();
+const cartsDAO = new CartsDAO();
+const userRepository = new UserRepository(userDAO);
+const cartsRepository = new CartsRepository(cartsDAO);
 
-authRouter.post("/register", async (req, res) => {
+router.post("/register", async (req, res) => {
   const { first_name, last_name, email, age, password } = req.body;
 
   if (!first_name || !last_name || !email || !age || !password)
@@ -14,7 +20,7 @@ authRouter.post("/register", async (req, res) => {
       .status(400)
       .send({ status: "Error", error: "Incomplete values" });
 
-  const findUser = await User.findOne({ email });
+  const findUser = await userRepository.findUser({ email });
 
   if (findUser)
     return res
@@ -22,14 +28,16 @@ authRouter.post("/register", async (req, res) => {
       .send({ status: "Error", error: "User already exists" });
 
   try {
-    const result = await User.create({
-      first_name: first_name,
-      last_name: last_name,
-      email: email,
-      age: age,
+    const newUser = {
+      first_name,
+      last_name,
+      email,
+      age,
       password: createHash(password),
       role: "user",
-    });
+    };
+
+    await userRepository.createUser(newUser);
 
     res
       .status(200)
@@ -40,7 +48,7 @@ authRouter.post("/register", async (req, res) => {
   }
 });
 
-authRouter.post("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const ADMIN_EMAIL = config.ADMIN_EMAIL;
@@ -55,7 +63,7 @@ authRouter.post("/login", async (req, res) => {
 
       handleAuthentication(user, res);
     } else {
-      const user = await User.findOne(
+      const user = await userRepository.findUserWithPopulate(
         { email },
         {
           email: 1,
@@ -65,8 +73,9 @@ authRouter.post("/login", async (req, res) => {
           password: 1,
           role: 1,
           cart: 1,
-        }
-      ).populate("cart");
+        },
+        "cart"
+      );
 
       if (!user)
         return res
@@ -80,7 +89,7 @@ authRouter.post("/login", async (req, res) => {
 
       let cart = user.cart;
       if (!cart) {
-        cart = await Carts.create({ products: [] });
+        cart = await cartsRepository.createCart({ products: [] });
         user.cart = cart._id;
         await user.save();
       }
@@ -94,10 +103,10 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-authRouter.post("/logout", (req, res) => {
+router.post("/logout", (req, res) => {
   res.clearCookie("access_token");
 
   res.redirect("/login");
 });
 
-export { authRouter };
+export default router;
