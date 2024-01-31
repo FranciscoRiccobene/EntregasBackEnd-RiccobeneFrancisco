@@ -62,48 +62,54 @@ router.get("/:pid", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
-  const { title, description, code, price, status, stock, category } = req.body;
+router.post(
+  "/",
+  passportCall("jwt"),
+  authorizationMiddleware(["admin"]),
+  async (req, res) => {
+    const { title, description, code, price, status, stock, category } =
+      req.body;
 
-  if (
-    !title ||
-    !description ||
-    !code ||
-    !price ||
-    !status ||
-    !stock ||
-    !category
-  ) {
-    CustomError.createError({
-      name: "Product creation error",
-      cause: generateProductErrorInfo({
-        title,
-        description,
-        code,
-        price,
-        status,
-        stock,
-        category,
-      }),
-      message: "Error creating product",
-      code: EnumError.INVALID_TYPES_ERROR,
-    });
-  }
-
-  try {
-    const existingProduct = await productsRepository.findProduct({ code });
-    if (existingProduct) {
-      return res.status(400).json({ message: "The code is already in use" });
+    if (
+      !title ||
+      !description ||
+      !code ||
+      !price ||
+      !status ||
+      !stock ||
+      !category
+    ) {
+      CustomError.createError({
+        name: "Product creation error",
+        cause: generateProductErrorInfo({
+          title,
+          description,
+          code,
+          price,
+          status,
+          stock,
+          category,
+        }),
+        message: "Error creating product",
+        code: EnumError.INVALID_TYPES_ERROR,
+      });
     }
 
-    const newProduct = await productsRepository.createProduct(req.body);
+    try {
+      const existingProduct = await productsRepository.findProduct({ code });
+      if (existingProduct) {
+        return res.status(400).json({ message: "The code is already in use" });
+      }
 
-    res.status(201).json(newProduct);
-  } catch (err) {
-    console.error(`Error adding product: ${err}`);
-    res.status(500).json({ message: "Error adding product" });
+      const newProduct = await productsRepository.createProduct(req.body);
+
+      res.status(201).json(newProduct);
+    } catch (err) {
+      console.error(`Error adding product: ${err}`);
+      res.status(500).json({ message: "Error adding product" });
+    }
   }
-});
+);
 
 router.put(
   "/:pid",
