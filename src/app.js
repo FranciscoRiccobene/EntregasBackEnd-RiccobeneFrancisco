@@ -33,8 +33,6 @@ app.use(passport.initialize());
 
 router(app);
 
-app.use(handlerError);
-
 app.listen(port, () => {
   console.log("Express server working on port: ", port);
 });

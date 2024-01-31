@@ -66,7 +66,7 @@ router.post(
   "/",
   passportCall("jwt"),
   authorizationMiddleware(["admin"]),
-  async (req, res) => {
+  async (req, res, next) => {
     const { title, description, code, price, status, stock, category } =
       req.body;
 
@@ -79,20 +79,22 @@ router.post(
       !stock ||
       !category
     ) {
-      CustomError.createError({
-        name: "Product creation error",
-        cause: generateProductErrorInfo({
-          title,
-          description,
-          code,
-          price,
-          status,
-          stock,
-          category,
-        }),
-        message: "Error creating product",
-        code: EnumError.INVALID_TYPES_ERROR,
-      });
+      return next(
+        CustomError.createError({
+          name: "Product creation error",
+          cause: generateProductErrorInfo({
+            title,
+            description,
+            code,
+            price,
+            status,
+            stock,
+            category,
+          }),
+          message: "Error creating product",
+          code: EnumError.INVALID_TYPES_ERROR,
+        })
+      );
     }
 
     try {

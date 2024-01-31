@@ -15,22 +15,25 @@ const cartsDAO = new CartsDAO();
 const userRepository = new UserRepository(userDAO);
 const cartsRepository = new CartsRepository(cartsDAO);
 
-router.post("/register", async (req, res) => {
+router.post("/register", async (req, res, next) => {
   const { first_name, last_name, email, age, password } = req.body;
 
   if (!first_name || !last_name || !email || !age || !password) {
-    CustomError.createError({
-      name: "User registration error",
-      cause: generateUserErrorInfo({
-        first_name,
-        last_name,
-        email,
-        age,
-        password,
-      }),
-      message: "Error trying to register an user. Incomplete or invalid data.",
-      code: EnumError.INVALID_TYPES_ERROR,
-    });
+    return next(
+      CustomError.createError({
+        name: "User registration error",
+        cause: generateUserErrorInfo({
+          first_name,
+          last_name,
+          email,
+          age,
+          password,
+        }),
+        message:
+          "Error trying to register an user. Incomplete or invalid data.",
+        code: EnumError.INVALID_TYPES_ERROR,
+      })
+    );
   }
 
   try {
