@@ -5,6 +5,9 @@ import UserRepository from "../repositories/User.repository.js";
 import CartsRepository from "../repositories/Carts.repository.js";
 import config from "../config/dotenv.config.js";
 import { createHash, isValidPassword, handleAuthentication } from "../utils.js";
+import CustomError from "../utils/CustomError.error.js";
+import { generateUserErrorInfo } from "../utils/info.error.js";
+import EnumError from "../utils/enum.error.js";
 
 const router = Router();
 const userDAO = new UserDAO();
@@ -15,19 +18,29 @@ const cartsRepository = new CartsRepository(cartsDAO);
 router.post("/register", async (req, res) => {
   const { first_name, last_name, email, age, password } = req.body;
 
-  if (!first_name || !last_name || !email || !age || !password)
-    return res
-      .status(400)
-      .send({ status: "Error", error: "Incomplete values" });
-
-  const findUser = await userRepository.findUser({ email });
-
-  if (findUser)
-    return res
-      .status(400)
-      .send({ status: "Error", error: "User already exists" });
+  if (!first_name || !last_name || !email || !age || !password) {
+    CustomError.createError({
+      name: "User registration error",
+      cause: generateUserErrorInfo({
+        first_name,
+        last_name,
+        email,
+        age,
+        password,
+      }),
+      message: "Error trying to register an user. Incomplete or invalid data.",
+      code: EnumError.INVALID_TYPES_ERROR,
+    });
+  }
 
   try {
+    const findUser = await userRepository.findUser({ email });
+
+    if (findUser)
+      return res
+        .status(400)
+        .send({ status: "Error", error: "User already exists" });
+
     const newUser = {
       first_name,
       last_name,
@@ -43,7 +56,7 @@ router.post("/register", async (req, res) => {
       .status(200)
       .json({ status: "Success", message: "User registered successfully" });
   } catch (error) {
-    console.error(`Error creating user: ${error.message}`);
+    console.error("Internal Server Error");
     res.status(500).send({ status: "Error", error: "Internal Server Error" });
   }
 });

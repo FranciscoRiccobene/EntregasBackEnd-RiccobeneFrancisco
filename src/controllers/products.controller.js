@@ -2,6 +2,9 @@ import express from "express";
 import ProductsDAO from "../dao/Products.dao.js";
 import ProductsRepository from "../repositories/Products.repository.js";
 import { passportCall, authorizationMiddleware } from "../utils.js";
+import CustomError from "../utils/CustomError.error.js";
+import EnumError from "../utils/enum.error.js";
+import { generateProductErrorInfo } from "../utils/info.error.js";
 
 const router = express.Router();
 const productsDAO = new ProductsDAO();
@@ -59,41 +62,48 @@ router.get("/:pid", async (req, res) => {
   }
 });
 
-router.post(
-  "/",
-  passportCall("jwt"),
-  authorizationMiddleware(["admin"]),
-  async (req, res) => {
-    const { title, description, code, price, status, stock, category } =
-      req.body;
+router.post("/", async (req, res) => {
+  const { title, description, code, price, status, stock, category } = req.body;
 
-    if (
-      !title ||
-      !description ||
-      !code ||
-      !price ||
-      !status ||
-      !stock ||
-      !category
-    ) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    try {
-      const existingProduct = await productsRepository.findProduct({ code });
-      if (existingProduct) {
-        return res.status(400).json({ message: "The code is already in use" });
-      }
-
-      const newProduct = await productsRepository.createProduct(req.body);
-
-      res.status(201).json(newProduct);
-    } catch (err) {
-      console.error(`Error adding product: ${err}`);
-      res.status(500).json({ message: "Error adding product" });
-    }
+  if (
+    !title ||
+    !description ||
+    !code ||
+    !price ||
+    !status ||
+    !stock ||
+    !category
+  ) {
+    CustomError.createError({
+      name: "Product creation error",
+      cause: generateProductErrorInfo({
+        title,
+        description,
+        code,
+        price,
+        status,
+        stock,
+        category,
+      }),
+      message: "Error creating product",
+      code: EnumError.INVALID_TYPES_ERROR,
+    });
   }
-);
+
+  try {
+    const existingProduct = await productsRepository.findProduct({ code });
+    if (existingProduct) {
+      return res.status(400).json({ message: "The code is already in use" });
+    }
+
+    const newProduct = await productsRepository.createProduct(req.body);
+
+    res.status(201).json(newProduct);
+  } catch (err) {
+    console.error(`Error adding product: ${err}`);
+    res.status(500).json({ message: "Error adding product" });
+  }
+});
 
 router.put(
   "/:pid",
