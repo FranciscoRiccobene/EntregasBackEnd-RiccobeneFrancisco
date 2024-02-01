@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
     const mockedProducts = Array.from({ length: count }, generateProducts);
     res.status(200).json(mockedProducts);
   } catch (error) {
-    console.error(`Error mocking product: ${error}`);
+    req.logger.error(`Error mocking product: ${error}`);
     res.status(500).json({ message: "Error mocking product" });
   }
 });

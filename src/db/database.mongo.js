@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import config from "../config/dotenv.config.js";
 
-const mongoConnect = async () => {
+const mongoConnect = async (req, res) => {
   try {
     await mongoose.connect(config.MONGO_DB, { dbName: "eccomerce" });
-    console.log("Connected to database");
+    req.logger.info("Connected to database");
   } catch (error) {
-    console.log(error);
+    req.logger.error(error);
   }
 };
 

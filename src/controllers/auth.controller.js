@@ -59,7 +59,7 @@ router.post("/register", async (req, res, next) => {
       .status(200)
       .json({ status: "Success", message: "User registered successfully" });
   } catch (error) {
-    console.error("Internal Server Error");
+    req.logger.error("Internal Server Error");
     res.status(500).send({ status: "Error", error: "Internal Server Error" });
   }
 });
@@ -114,7 +114,7 @@ router.post("/login", async (req, res) => {
       handleAuthentication(user, res);
     }
   } catch (error) {
-    console.error(`Error, invalid credentials ${error.message}`);
+    req.logger.error(`Error, invalid credentials ${error.message}`);
     res.redirect("/error");
   }
 });

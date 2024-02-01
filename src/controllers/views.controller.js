@@ -66,7 +66,7 @@ router.get("/products", async (req, res) => {
 
     res.render("index", { layout: "products", products: result });
   } catch (err) {
-    console.error(`Error reading products file: ${err}`);
+    req.logger.error(`Error reading products file: ${err}`);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -82,7 +82,7 @@ router.get("/products/:pid", async (req, res) => {
 
     res.render("index", { layout: "productsDetail", product: product });
   } catch (error) {
-    console.error(`Error reading products file: ${error}`);
+    req.logger.error(`Error reading products file: ${error}`);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -102,7 +102,7 @@ router.get("/carts/:cid", async (req, res) => {
 
     res.render("index", { layout: "cartDetail", cart });
   } catch (error) {
-    console.error(`Error fetching the cart: ${error.message}`);
+    req.logger.error(`Error fetching the cart: ${error.message}`);
     res.status(500).json({ message: "Internal server error" });
   }
 });

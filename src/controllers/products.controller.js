@@ -40,7 +40,7 @@ router.get("/", async (req, res) => {
 
     res.status(200).json(result);
   } catch (err) {
-    console.error(`Error reading products from database: ${err}`);
+    req.logger.error(`Error reading products from database: ${err}`);
     res.status(500).json({ status: "error", message: "Internal Server Error" });
   }
 });
@@ -57,7 +57,7 @@ router.get("/:pid", async (req, res) => {
       res.status(404).json({ message: "Product not found" });
     }
   } catch (err) {
-    console.error(`Error reading products file: ${err}`);
+    req.logger.error(`Error reading products file: ${err}`);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -107,7 +107,7 @@ router.post(
 
       res.status(201).json(newProduct);
     } catch (err) {
-      console.error(`Error adding product: ${err}`);
+      req.logger.error(`Error adding product: ${err}`);
       res.status(500).json({ message: "Error adding product" });
     }
   }
@@ -133,7 +133,7 @@ router.put(
         res.status(200).json(updatedProduct);
       }
     } catch (err) {
-      console.error(`Error updating product: ${err}`);
+      req.logger.error(`Error updating product: ${err}`);
       res.status(500).json({ message: "Error updating product" });
     }
   }
@@ -155,7 +155,7 @@ router.delete(
         res.status(204).json({ message: "Product deleted" });
       }
     } catch (err) {
-      console.error(`Error deleting product: ${err}`);
+      req.logger.error(`Error deleting product: ${err}`);
       res.status(500).json({ message: "Error deleting product" });
     }
   }
