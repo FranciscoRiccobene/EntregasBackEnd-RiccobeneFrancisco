@@ -1,4 +1,5 @@
 import EnumError from "../../utils/enum.error.js";
+import { logger } from "../../logger/factory.js";
 
 export default (error, req, res, next) => {
   logger.error(error.cause);

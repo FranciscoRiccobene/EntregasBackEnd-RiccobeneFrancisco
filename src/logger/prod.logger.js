@@ -1,7 +1,7 @@
 import winston from "winston";
 import { customLevelOptions } from "../utils/loggerCustomLevelOptions.js";
 
-const logger = winston.createLogger({
+const prodLogger = winston.createLogger({
   levels: customLevelOptions.level,
   transports: [
     new winston.transports.Console({
@@ -19,4 +19,4 @@ const logger = winston.createLogger({
   ],
 });
 
-export default logger;
+export default prodLogger;

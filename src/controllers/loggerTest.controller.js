@@ -1,22 +1,25 @@
 import express from "express";
+import { logger } from "../logger/factory.js";
 
 const router = express.Router();
 
 router.get("/", (req, res) => {
   try {
-    req.logger.debug("Esto es un mensaje de debug");
+    logger.debug("Esto es un mensaje de debug");
 
-    req.logger.http("Esto es un mensaje HTTP");
+    logger.http("Esto es un mensaje HTTP");
 
-    req.logger.info("Esto es un mensaje de info");
+    logger.info("Esto es un mensaje de info");
 
-    req.logger.warning("Esto es un mensaje de warning");
+    logger.warn("Esto es un mensaje de warning");
 
-    req.logger.error("Esto es un mensaje de error");
+    logger.error("Esto es un mensaje de error");
 
-    req.logger.fatal("Esto es un mensaje fatal");
+    logger.fatal("Esto es un mensaje fatal");
+
+    res.status(200).send({ message: "Loggers working properly" });
   } catch (error) {
-    req.logger.error(`Error testing logs: ${error}`);
+    logger.error(`Error testing logs: ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

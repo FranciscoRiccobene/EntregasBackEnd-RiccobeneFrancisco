@@ -6,7 +6,7 @@ import cors from "cors";
 import morgan from "morgan";
 
 import __dirname from "./utils.js";
-import { addLogger } from "./middlewares/logger.middleware.js";
+import { logger } from "./logger/factory.js";
 import mongoConnect from "./db/database.mongo.js";
 import config from "./config/dotenv.config.js";
 import initializePassport from "./config/passport.config.js";
@@ -22,8 +22,6 @@ app.use(express.static(__dirname + "/public"));
 app.use(cors());
 app.use(morgan("dev"));
 
-app.use(addLogger);
-
 mongoConnect();
 
 app.engine("handlebars", handlebars.engine());
@@ -36,5 +34,5 @@ app.use(passport.initialize());
 router(app);
 
 app.listen(port, () => {
-  console.log(`Express server working on port: ${port}`);
+  logger.info(`Express server working on port: ${port}`);
 });

@@ -4,6 +4,7 @@ import CartsDAO from "../dao/Carts.dao.js";
 import ProductsRepository from "../repositories/Products.repository.js";
 import CartsRepository from "../repositories/Carts.repository.js";
 import { passportCall } from "../utils.js";
+import { logger } from "../logger/factory.js";
 
 const router = express.Router();
 const productsDAO = new ProductsDAO();
@@ -66,7 +67,7 @@ router.get("/products", async (req, res) => {
 
     res.render("index", { layout: "products", products: result });
   } catch (err) {
-    req.logger.error(`Error reading products file: ${err}`);
+    logger.error(`Error reading products file: ${err}`);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -82,7 +83,7 @@ router.get("/products/:pid", async (req, res) => {
 
     res.render("index", { layout: "productsDetail", product: product });
   } catch (error) {
-    req.logger.error(`Error reading products file: ${error}`);
+    logger.error(`Error reading products file: ${error}`);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -102,7 +103,7 @@ router.get("/carts/:cid", async (req, res) => {
 
     res.render("index", { layout: "cartDetail", cart });
   } catch (error) {
-    req.logger.error(`Error fetching the cart: ${error.message}`);
+    logger.error(`Error fetching the cart: ${error.message}`);
     res.status(500).json({ message: "Internal server error" });
   }
 });

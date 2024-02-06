@@ -1,20 +1,15 @@
 import { appConfig } from "../config/app.config.js";
+import devLogger from "./dev.logger.js";
+import prodLogger from "./prod.logger.js";
 
-export const getLogger = async () => {
-  let response;
-  switch (appConfig.environment) {
-    case "development":
-      console.log("dev");
-      response = await import("./dev.logger.js");
-      break;
-    case "production":
-      console.log("prod");
-      response = await import("./prod.logger.js");
-      break;
+let logger;
 
-    default:
-      break;
-  }
-  console.log(response);
-  return response;
-};
+if (appConfig.environment === "development") {
+  logger = devLogger;
+  logger.info("development");
+} else {
+  logger = prodLogger;
+  logger.info("production");
+}
+
+export { logger };

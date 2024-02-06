@@ -1,5 +1,6 @@
 import express from "express";
 import generateProducts from "../utils/mock.utils.js";
+import { logger } from "../logger/factory.js";
 
 const router = express.Router();
 
@@ -10,7 +11,7 @@ router.get("/", (req, res) => {
     const mockedProducts = Array.from({ length: count }, generateProducts);
     res.status(200).json(mockedProducts);
   } catch (error) {
-    req.logger.error(`Error mocking product: ${error}`);
+    logger.error(`Error mocking product: ${error}`);
     res.status(500).json({ message: "Error mocking product" });
   }
 });

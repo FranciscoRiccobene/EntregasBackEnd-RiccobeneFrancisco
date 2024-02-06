@@ -1,0 +1,5 @@
+error: Error testing logs: TypeError: logger.warning is not a function
+error: Esto es un mensaje de error
+fatal: Esto es un mensaje fatal
+error: Esto es un mensaje de error
+fatal: Esto es un mensaje fatal

@@ -10,6 +10,7 @@ import UserRepository from "../repositories/User.repository.js";
 import TicketRepository from "../repositories/Ticket.repository.js";
 
 import { passportCall, authorizationMiddleware } from "../utils.js";
+import { logger } from "../logger/factory.js";
 
 const router = express.Router();
 
@@ -53,7 +54,7 @@ router.post(
 
       res.status(201).json({ message: "Products added to cart successfully" });
     } catch (err) {
-      req.logger.error(`Error creating cart ${err}`);
+      logger.error(`Error creating cart ${err}`);
       res.status(500).json({ message: "Error creating cart" });
     }
   }
@@ -73,7 +74,7 @@ router.get("/:cid", async (req, res) => {
 
     res.status(200).json(cart);
   } catch (err) {
-    req.logger.error(`Error getting cart ${err.message}`);
+    logger.error(`Error getting cart ${err.message}`);
     res.status(500).json({ message: "Error getting cart" });
   }
 });
@@ -101,7 +102,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
 
     res.status(200).json(updatedCart);
   } catch (err) {
-    req.logger.error(`Error adding product to cart: ${err}`);
+    logger.error(`Error adding product to cart: ${err}`);
     res.status(500).json({ message: "Error adding product to cart" });
   }
 });
@@ -129,7 +130,7 @@ router.delete("/:cid/product/:pid", async (req, res) => {
 
     res.status(200).json({ message: "Product removed successfully" });
   } catch (error) {
-    req.logger.error(`Internal server error: ${error.message}`);
+    logger.error(`Internal server error: ${error.message}`);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -150,7 +151,7 @@ router.put("/:cid", async (req, res) => {
 
     res.status(200).json({ message: "Cart updated successfully" });
   } catch (error) {
-    req.logger.error(`Internal server error: ${error.message}`);
+    logger.error(`Internal server error: ${error.message}`);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -179,7 +180,7 @@ router.put("/:cid/products/:pid", async (req, res) => {
 
     res.status(200).json({ message: "Product quantity updated succesfully" });
   } catch (error) {
-    req.logger.error(`Internal server error: ${error.message}`);
+    logger.error(`Internal server error: ${error.message}`);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -199,7 +200,7 @@ router.delete("/:cid", async (req, res) => {
 
     res.status(200).json({ message: "All products removed from Cart" });
   } catch (error) {
-    req.logger.error(`Internal server error: ${error.message}`);
+    logger.error(`Internal server error: ${error.message}`);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -276,7 +277,7 @@ router.post("/:cid/purchase", async (req, res) => {
           : null,
     });
   } catch (error) {
-    req.logger.error(`Internal server error: ${error.message}`);
+    logger.error(`Internal server error: ${error.message}`);
     res.status(500).json({ message: "Internal server error" });
   }
 });

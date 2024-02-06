@@ -8,6 +8,7 @@ import { createHash, isValidPassword, handleAuthentication } from "../utils.js";
 import CustomError from "../utils/CustomError.error.js";
 import { generateUserErrorInfo } from "../utils/info.error.js";
 import EnumError from "../utils/enum.error.js";
+import { logger } from "../logger/factory.js";
 
 const router = Router();
 const userDAO = new UserDAO();
@@ -59,7 +60,7 @@ router.post("/register", async (req, res, next) => {
       .status(200)
       .json({ status: "Success", message: "User registered successfully" });
   } catch (error) {
-    req.logger.error("Internal Server Error");
+    logger.error("Internal Server Error");
     res.status(500).send({ status: "Error", error: "Internal Server Error" });
   }
 });
@@ -114,7 +115,7 @@ router.post("/login", async (req, res) => {
       handleAuthentication(user, res);
     }
   } catch (error) {
-    req.logger.error(`Error, invalid credentials ${error.message}`);
+    logger.error(`Error, invalid credentials ${error.message}`);
     res.redirect("/error");
   }
 });
