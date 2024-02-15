@@ -11,7 +11,7 @@ const userSchema = new Schema({
   age: { type: Number },
   password: { type: String },
   cart: { type: Schema.Types.ObjectId, ref: cartsCollection },
-  role: { type: String, default: "user" },
+  role: { type: String, enum: ["user", "premium"], default: "user" },
 });
 
 const User = model(usersCollection, userSchema);

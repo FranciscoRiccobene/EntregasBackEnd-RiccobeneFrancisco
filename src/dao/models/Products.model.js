@@ -14,6 +14,7 @@ const productSchema = new Schema({
   category: { type: String },
   thumbnails: { type: [String] },
   isVisible: { type: Boolean, default: true },
+  owner: { type: Schema.Types.Mixed, ref: "User" },
 });
 
 productSchema.plugin(mongoosePaginate);

@@ -7,6 +7,10 @@ class UserRepository {
     return await this.userDAO.findUser(userInfo);
   }
 
+  async findUserById(id) {
+    return await this.userDAO.findUserById(id);
+  }
+
   async findUserWithPopulate(userInfo, fieldsSelect, fieldsPopulate) {
     return await this.userDAO.findUserWithPopulate(
       userInfo,
@@ -17,6 +21,10 @@ class UserRepository {
 
   async createUser(userInfo) {
     return await this.userDAO.createUser(userInfo);
+  }
+
+  async findOneAndUpdateField(userInfo, updateInfo) {
+    return await this.userDAO.findOneAndUpdateField(userInfo, updateInfo);
   }
 }
 

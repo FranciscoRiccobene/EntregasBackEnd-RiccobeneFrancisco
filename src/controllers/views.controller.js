@@ -36,6 +36,10 @@ router.get("/current", passportCall("jwt"), (req, res) => {
   res.render("index", { layout: "current", user: userDTO });
 });
 
+router.get("/send-reset-mail", (req, res) => {
+  res.render("index", { layout: "sendResetMail" });
+});
+
 router.get("/products", async (req, res) => {
   try {
     const { limit = 10, page = 1, sort, query } = req.query;

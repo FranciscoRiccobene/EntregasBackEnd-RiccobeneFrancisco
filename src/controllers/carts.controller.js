@@ -3,10 +3,12 @@ import { v4 as uuidv4 } from "uuid";
 
 import CartsDAO from "../dao/Carts.dao.js";
 import UserDAO from "../dao/User.dao.js";
+import ProductsDAO from "../dao/Products.dao.js";
 import TicketDAO from "../dao/Ticket.dao.js";
 
 import CartsRepository from "../repositories/Carts.repository.js";
 import UserRepository from "../repositories/User.repository.js";
+import ProductsRepository from "../repositories/Products.repository.js";
 import TicketRepository from "../repositories/Ticket.repository.js";
 
 import { passportCall, authorizationMiddleware } from "../utils.js";
@@ -16,10 +18,12 @@ const router = express.Router();
 
 const cartsDAO = new CartsDAO();
 const userDAO = new UserDAO();
+const productsDAO = new ProductsDAO();
 const ticketDAO = new TicketDAO();
 
 const cartsRepository = new CartsRepository(cartsDAO);
 const userRepository = new UserRepository(userDAO);
+const productsRepository = new ProductsRepository(productsDAO);
 const ticketRepository = new TicketRepository(ticketDAO);
 
 router.post(
@@ -36,6 +40,15 @@ router.post(
 
       const cartId = user.user.cart;
       const cart = await cartsRepository.getCart(cartId);
+
+      const product = await productsRepository.getProductById(productId);
+      if (product.owner === user.user.email && user.user.role === "premium") {
+        return res
+          .status(403)
+          .json({
+            message: "You are not allowed to add your own product to the cart",
+          });
+      }
 
       const existingProduct = cart.products.find(
         (product) => product.product && product.product.toString() === productId

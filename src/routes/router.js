@@ -4,6 +4,8 @@ import productsController from "../controllers/products.controller.js";
 import viewsController from "../controllers/views.controller.js";
 import mockController from "../controllers/mock.controller.js";
 import loggerTestController from "../controllers/loggerTest.controller.js";
+import mailController from "../controllers/mail.controller.js";
+import userController from "../controllers/user.controller.js";
 import handlerError from "../middlewares/errors/handler.error.js";
 
 const router = (app) => {
@@ -13,6 +15,8 @@ const router = (app) => {
   app.use("/api/carts", cartsController);
   app.use("/mockingproducts", mockController);
   app.use("/loggerTest", loggerTestController);
+  app.use("/resetpassword", mailController);
+  app.use("/api/users", userController);
   app.use(handlerError);
 };
 

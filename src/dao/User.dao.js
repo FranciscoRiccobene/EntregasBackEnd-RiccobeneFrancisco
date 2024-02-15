@@ -12,6 +12,14 @@ class UserDAO {
     }
   }
 
+  async findUserById(id) {
+    try {
+      return await User.findById(id);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findUserWithPopulate(userInfo, fieldsSelect, fieldsPopulate) {
     try {
       return await User.findOne(userInfo)
@@ -27,6 +35,14 @@ class UserDAO {
       const newUserInfo = new UserDTO(userInfo);
       newUserInfo.password = userInfo.password;
       return await User.create(newUserInfo);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findOneAndUpdateField(userInfo, updateInfo) {
+    try {
+      return await User.findOneAndUpdate(userInfo, updateInfo);
     } catch (error) {
       throw error;
     }

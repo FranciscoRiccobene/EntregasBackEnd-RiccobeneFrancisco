@@ -3,6 +3,12 @@ import { dirname } from "path";
 import passport from "passport";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { logger } from "./logger/factory.js";
+import ProductsDAO from "./dao/Products.dao.js";
+import ProductsRepository from "./repositories/Products.repository.js";
+
+const productsDAO = new ProductsDAO();
+const productsRepository = new ProductsRepository(productsDAO);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -54,7 +60,28 @@ export const authorizationMiddleware = (allowedRoles) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    next();
+    if (
+      currentUser.user.role === "premium" &&
+      (req.method === "PUT" || req.method === "DELETE")
+    ) {
+      const productId = req.params.pid;
+
+      productsRepository
+        .getProductById(productId)
+        .then((product) => {
+          if (!product || product.owner !== currentUser.user.email) {
+            return res.status(403).json({ message: "Access denied" });
+          }
+
+          next();
+        })
+        .catch((err) => {
+          logger.error(`Error finding product: ${err}`);
+          res.status(500).json({ message: "Error finding product" });
+        });
+    } else {
+      next();
+    }
   };
 };
 

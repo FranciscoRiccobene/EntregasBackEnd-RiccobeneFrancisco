@@ -66,7 +66,7 @@ router.get("/:pid", async (req, res) => {
 router.post(
   "/",
   passportCall("jwt"),
-  authorizationMiddleware(["admin"]),
+  authorizationMiddleware(["admin", "premium"]),
   async (req, res, next) => {
     const { title, description, code, price, status, stock, category } =
       req.body;
@@ -104,7 +104,12 @@ router.post(
         return res.status(400).json({ message: "The code is already in use" });
       }
 
-      const newProduct = await productsRepository.createProduct(req.body);
+      const currentUser = req.user;
+      const owner =
+        currentUser.user.role === "premium" ? currentUser.user.email : "admin";
+
+      const newProductData = { ...req.body, owner: owner };
+      const newProduct = await productsRepository.createProduct(newProductData);
 
       res.status(201).json(newProduct);
     } catch (err) {
@@ -117,7 +122,7 @@ router.post(
 router.put(
   "/:pid",
   passportCall("jwt"),
-  authorizationMiddleware(["admin"]),
+  authorizationMiddleware(["admin", "premium"]),
   async (req, res) => {
     try {
       const productId = req.params.pid;
@@ -143,7 +148,7 @@ router.put(
 router.delete(
   "/:pid",
   passportCall("jwt"),
-  authorizationMiddleware(["admin"]),
+  authorizationMiddleware(["admin", "premium"]),
   async (req, res) => {
     try {
       const productToDelete = await productsRepository.deleteProduct(
