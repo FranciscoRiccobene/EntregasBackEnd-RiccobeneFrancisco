@@ -29,7 +29,7 @@ const ticketRepository = new TicketRepository(ticketDAO);
 router.post(
   "/",
   passportCall("jwt"),
-  authorizationMiddleware(["user"]),
+  authorizationMiddleware(["user", "premium"]),
   async (req, res) => {
     try {
       const { productId, quantity } = req.body;
