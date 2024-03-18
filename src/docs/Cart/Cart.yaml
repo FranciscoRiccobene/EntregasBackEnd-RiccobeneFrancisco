@@ -110,6 +110,112 @@ paths:
                     type: string
                     example: Error getting cart
 
+    put:
+      summary: Update cart products
+      description: Update the products of the cart specified by its ID.
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+            description: ID of the cart to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                products:
+                  type: array
+                  description: Array of products to update the cart with.
+                  items:
+                    $ref: '#components/schemas/Products'
+      responses:
+        "200":
+          description: Cart updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cart updated successfully
+        "404":
+          description: Cart not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cart not found
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Internal server error
+
+    delete:
+      summary: Remove all products from cart
+      description: Remove all products from the cart specified by its ID.
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+            description: ID of the cart to remove all products from.
+      responses:
+        "200":
+          description: All products removed from cart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: All products removed from Cart
+        "404":
+          description: Cart not found
+          content:
+             application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cart not found
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Internal server error  
+
   /api/carts/{cid}/product/{pid}:
     post:
       summary: Add product to cart
@@ -171,7 +277,6 @@ paths:
                     type: string
                     example: Error adding product to cart
 
-  /api/carts/{cid}/product/{pid}:
     delete:
       summary: Remove product from cart
       description: Remove a product from the cart specified by its ID.
@@ -224,68 +329,7 @@ paths:
                   message:
                     type: string
                     example: Internal server error
-                  
-  /api/carts/{cid}:
-    put:
-      summary: Update cart products
-      description: Update the products of the cart specified by its ID.
-      tags:
-        - Carts
-      parameters:
-        - in: path
-          name: cid
-          required: true
-          schema:
-            type: string
-            description: ID of the cart to update.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                products:
-                  type: array
-                  description: Array of products to update the cart with.
-                  items:
-                    $ref: '#components/schemas/Products'
-      responses:
-        "200":
-          description: Cart updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Cart updated successfully
-        "404":
-          description: Cart not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Cart not found
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: error
-                  message:
-                    type: string
-                    example: Internal server error
 
-  /api/carts/{cid}/products/{pid}:
     put:
       summary: Update product quantity in cart
       description: Update the quantity of a product in the cart specified by its ID.
@@ -335,54 +379,6 @@ paths:
                   message:
                     type: string
                     example: Cart not found or Product not found
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: error
-                  message:
-                    type: string
-                    example: Internal server error
-                  
-  /api/carts/{cid}:
-    delete:
-      summary: Remove all products from cart
-      description: Remove all products from the cart specified by its ID.
-      tags:
-        - Carts
-      parameters:
-        - in: path
-          name: cid
-          required: true
-          schema:
-            type: string
-            description: ID of the cart to remove all products from.
-      responses:
-        "200":
-          description: All products removed from cart
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: All products removed from Cart
-        "404":
-          description: Cart not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Cart not found
         "500":
           description: Internal Server Error
           content:
