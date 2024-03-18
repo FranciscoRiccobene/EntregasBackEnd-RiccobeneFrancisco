@@ -97,12 +97,12 @@ router.post("/login", async (req, res) => {
       if (!user)
         return res
           .status(401)
-          .send({ status: "Error", error: "User or password incorrect 1" });
+          .send({ status: "Error", error: "User or password incorrect" });
 
       if (!isValidPassword(user, password))
         return res
           .status(401)
-          .send({ status: "Error", error: "User or password incorrect 2" });
+          .send({ status: "Error", error: "User or password incorrect" });
 
       let cart = user.cart;
       if (!cart) {

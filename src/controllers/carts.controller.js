@@ -67,8 +67,8 @@ router.post(
 
       res.status(201).json({ message: "Products added to cart successfully" });
     } catch (err) {
-      logger.error(`Error creating cart ${err}`);
-      res.status(500).json({ message: "Error creating cart" });
+      logger.error(`Internal Server Error ${err}`);
+      res.status(500).json({ message: "Internal Server Error" });
     }
   }
 );
