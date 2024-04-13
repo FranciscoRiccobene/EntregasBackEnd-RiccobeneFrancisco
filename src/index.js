@@ -53,3 +53,7 @@ router(app);
 app.listen(port, () => {
   logger.info(`Express server working on port: ${port}`);
 });
+
+export default (req, res) => {
+  app(req, res);
+};
