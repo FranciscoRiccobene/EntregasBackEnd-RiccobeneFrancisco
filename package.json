@@ -1,7 +1,7 @@
 {
-  "name": "entregas",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "backend proyect",
   "main": "app.js",
   "type": "module",
   "engines": {

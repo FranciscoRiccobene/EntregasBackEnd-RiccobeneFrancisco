@@ -12,6 +12,7 @@ const userSchema = new Schema({
   password: { type: String },
   cart: { type: Schema.Types.ObjectId, ref: cartsCollection },
   role: { type: String, enum: ["user", "premium"], default: "user" },
+  lastConnection: { type: Date, default: Date.now() },
 });
 
 const User = model(usersCollection, userSchema);

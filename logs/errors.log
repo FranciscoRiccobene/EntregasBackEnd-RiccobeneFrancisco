@@ -1,30 +1,10 @@
-error: Error testing logs: TypeError: logger.warning is not a function
-error: Esto es un mensaje de error
-fatal: Esto es un mensaje fatal
-error: Esto es un mensaje de error
-fatal: Esto es un mensaje fatal
-error: Error
-error: Error
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: undefined
-error: Error: Parameter "filter" to findOneAndUpdate() must be an object, got "franriccobene98@gmail.com" (type string) {"stack":"ObjectParameterError: Parameter \"filter\" to findOneAndUpdate() must be an object, got \"franriccobene98@gmail.com\" (type string)\n    at Query.findOneAndUpdate (C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\mongoose\\lib\\query.js:3199:7)\n    at Model.findOneAndUpdate (C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\mongoose\\lib\\model.js:2445:13)\n    at UserDAO.findOneAndUpdateField (file:///C:/Users/franr/Desktop/CursoCoder/BackEnd/Entregas/src/dao/User.dao.js:37:25)\n    at UserRepository.findOneAndUpdateField (file:///C:/Users/franr/Desktop/CursoCoder/BackEnd/Entregas/src/repositories/User.repository.js:23:31)\n    at file:///C:/Users/franr/Desktop/CursoCoder/BackEnd/Entregas/src/controllers/mail.controller.js:83:26\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)"}
-error: Error jwt expired {"expiredAt":"2024-02-14T03:05:48.000Z","name":"TokenExpiredError","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at file:///C:/Users/franr/Desktop/CursoCoder/BackEnd/Entregas/src/controllers/mail.controller.js:51:30\n    at Layer.handle [as handle_request] (C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\express\\lib\\router\\route.js:144:13)\n    at Route.dispatch (C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\express\\lib\\router\\route.js:114:3)\n    at Layer.handle [as handle_request] (C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\express\\lib\\router\\index.js:284:15\n    at param (C:\\Users\\franr\\Desktop\\CursoCoder\\BackEnd\\Entregas\\node_modules\\express\\lib\\router\\index.js:365:14)"}
-error: Error adding product: ValidationError: owner: Cast to ObjectId failed for value "admin" (type string) at path "owner" because of "BSONError"
+error: Error fetching the cart: Cast to ObjectId failed for value "[object Object]" (type string) at path "_id" for model "Carts"
+error: Error fetching the cart: Cast to ObjectId failed for value "[object Object]" (type string) at path "_id" for model "Carts"
+error: Internal Server Error
+error: Internal Server Error
+error: Internal Server Error
+error: Cart not found or empty
+error: Cart not found or empty
+error: Cart not found or empty
+error: Cart not found or empty
+error: Cart not found or empty

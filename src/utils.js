@@ -4,11 +4,16 @@ import passport from "passport";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { logger } from "./logger/factory.js";
+import UserDAO from "./dao/User.dao.js";
+import UserRepository from "./repositories/User.repository.js";
 import ProductsDAO from "./dao/Products.dao.js";
 import ProductsRepository from "./repositories/Products.repository.js";
 
 const productsDAO = new ProductsDAO();
+const userDAO = new UserDAO();
+
 const productsRepository = new ProductsRepository(productsDAO);
+const userRepository = new UserRepository(userDAO);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -83,6 +88,35 @@ export const authorizationMiddleware = (allowedRoles) => {
       next();
     }
   };
+};
+
+export const adminAuthMiddleware = () => {
+  return (req, res, next) => {
+    const adminUser = req.user;
+
+    if (!adminUser || adminUser.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    next();
+  };
+};
+
+export const updateLastConnectionMiddleware = (req, res, next) => {
+  const currentUser = req.user;
+
+  if (
+    currentUser &&
+    (currentUser.user.role === "user" || currentUser.user.role === "premium")
+  ) {
+    userRepository.findOneAndUpdateField(
+      { email: currentUser.user.email },
+      {
+        lastConnection: new Date(),
+      }
+    );
+  }
+  next();
 };
 
 export default __dirname;

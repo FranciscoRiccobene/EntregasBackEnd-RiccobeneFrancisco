@@ -39,6 +39,7 @@ router.post("/register", async (req, res, next) => {
 
   try {
     const findUser = await userRepository.findUser({ email });
+    const newCart = await cartsRepository.createCart({ products: [] });
 
     if (findUser)
       return res
@@ -54,7 +55,9 @@ router.post("/register", async (req, res, next) => {
       role: "user",
     };
 
-    await userRepository.createUser(newUser);
+    const user = await userRepository.createUser(newUser);
+    user.cart = newCart._id;
+    await user.save();
 
     res
       .status(200)
@@ -103,13 +106,6 @@ router.post("/login", async (req, res) => {
         return res
           .status(401)
           .send({ status: "Error", error: "User or password incorrect" });
-
-      let cart = user.cart;
-      if (!cart) {
-        cart = await cartsRepository.createCart({ products: [] });
-        user.cart = cart._id;
-        await user.save();
-      }
 
       delete user.password;
       handleAuthentication(user, res);

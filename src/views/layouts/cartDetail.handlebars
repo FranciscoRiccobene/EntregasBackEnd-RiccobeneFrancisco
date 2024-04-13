@@ -5,24 +5,37 @@
     <title>Carrito</title>
   </head>
   <body>
-    <h1>Detalle del Carrito</h1>
-
+    <div>
+      <h1>Detalle del Carrito</h1>
+      <a href="/products">
+        <button type="button">Ir a lista de productos</button>
+      </a>
+    </div>
     {{#if cart}}
       <h2>Productos en el Carrito</h2>
+
       <ul>
         {{#each cart.products}}
           <li>
-            <p><strong>Producto:</strong>
-              {{this.product.title}}</p>
-            <p><strong>Precio:</strong>
-              ${{this.product.price}}</p>
-            <p><strong>Cantidad:</strong>
-              {{this.quantity}}</p>
+            <p>Producto: <strong>{{this.product.title}}</strong></p>
+            <p>Precio unitario: <strong>${{this.product.price}}</strong></p>
+            <p>Stock disponible: <strong>{{this.product.stock}}</strong></p>
+            <p>Cantidad: {{this.quantity}}</p>
           </li>
         {{/each}}
       </ul>
+      <h3>Total a pagar: <strong><span id="cartTotal"></span></strong></h3>
+      <form id="purchaseForm">
+        <input type="hidden" name="cartId" value="{{cart._id}}" />
+        <button type="submit">Finalizar compra</button>
+      </form>
     {{else}}
       <p>Carrito no encontrado</p>
     {{/if}}
+
+    <script>
+      document.getElementById("cartTotal").innerText = `${{{cartTotal}}}`;
+    </script>
+    <script src="/js/purchaseCart.js"></script>
   </body>
 </html>

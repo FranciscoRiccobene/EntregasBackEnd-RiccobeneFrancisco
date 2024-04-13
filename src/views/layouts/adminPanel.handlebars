@@ -1,0 +1,43 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin user</title>
+    <link rel="stylesheet" href="/css/adminPage.css" />
+  </head>
+  <body>
+    <h1>Hola, admin!</h1>
+    <h2>Usuarios</h2>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each users}}
+          <tr>
+            <td>{{this.first_name}} {{this.last_name}}</td>
+            <td>{{this.email}}</td>
+            <td>{{this.role}}</td>
+            <td>
+              <form class="editUserRoleForm">
+                <input type="hidden" name="userId" value="{{this._id}}" />
+                <input type="hidden" name="userRole" value="{{this.role}}" />
+                <button type="submit">Editar Rol</button>
+              </form>
+              <form class="deleteUserForm">
+                <input type="hidden" name="userId" value="{{this._id}}" />
+                <button type="submit">Eliminar Usuario</button>
+              </form>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <script src="/js/editRole.js"></script>
+    <script src="/js/deleteUser.js"></script>
+  </body>
+</html>

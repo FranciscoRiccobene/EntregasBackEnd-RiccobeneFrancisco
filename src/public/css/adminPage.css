@@ -1,0 +1,32 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+* {
+  margin: 2px 2px 0 4px;
+  padding: 8px;
+}
+h1,
+h2,
+h3 {
+  margin: 18px 0 0 0;
+}
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+.tabla th,
+.tabla td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  width: 27%;
+}
+.tabla form {
+  padding: 0px;
+  text-align: left;
+}
+.tabla th {
+  background-color: #f2f2f2;
+}

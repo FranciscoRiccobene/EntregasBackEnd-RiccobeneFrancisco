@@ -11,7 +11,11 @@ import UserRepository from "../repositories/User.repository.js";
 import ProductsRepository from "../repositories/Products.repository.js";
 import TicketRepository from "../repositories/Ticket.repository.js";
 
-import { passportCall, authorizationMiddleware } from "../utils.js";
+import {
+  passportCall,
+  authorizationMiddleware,
+  updateLastConnectionMiddleware,
+} from "../utils.js";
 import { logger } from "../logger/factory.js";
 
 const router = express.Router();
@@ -30,9 +34,11 @@ router.post(
   "/",
   passportCall("jwt"),
   authorizationMiddleware(["user", "premium"]),
+  updateLastConnectionMiddleware,
   async (req, res) => {
     try {
-      const { productId, quantity } = req.body;
+      const productId = req.body.productId;
+      const quantity = req.body.quantity;
       const user = req.user;
 
       if (!user.user.cart)
@@ -43,11 +49,9 @@ router.post(
 
       const product = await productsRepository.getProductById(productId);
       if (product.owner === user.user.email && user.user.role === "premium") {
-        return res
-          .status(403)
-          .json({
-            message: "You are not allowed to add your own product to the cart",
-          });
+        return res.status(403).json({
+          message: "You are not allowed to add your own product to the cart",
+        });
       }
 
       const existingProduct = cart.products.find(
@@ -65,7 +69,7 @@ router.post(
 
       await cart.save();
 
-      res.status(201).json({ message: "Products added to cart successfully" });
+      res.status(201).json({ message: "Product added to cart successfully" });
     } catch (err) {
       logger.error(`Internal Server Error ${err}`);
       res.status(500).json({ message: "Internal Server Error" });
@@ -220,7 +224,7 @@ router.delete("/:cid", async (req, res) => {
 
 router.post("/:cid/purchase", async (req, res) => {
   try {
-    const cartId = req.params.cid;
+    const cartId = req.body.cartId;
     const productsNotPurchased = [];
 
     const user = await userRepository.findUser({ cart: cartId });
@@ -230,10 +234,12 @@ router.post("/:cid/purchase", async (req, res) => {
     );
 
     if (!cart || cart.products.length === 0) {
+      logger.error("Cart not found or empty");
       return res.status(404).json({ message: "Cart not found or empty" });
     }
 
     if (!user) {
+      logger.error("User not found");
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -260,7 +266,8 @@ router.post("/:cid/purchase", async (req, res) => {
     );
 
     const totalAmount = cart.products.reduce(
-      (acc, cartProduct) => acc + cartProduct.product.price,
+      (acc, cartProduct) =>
+        acc + cartProduct.product.price * cartProduct.quantity,
       0
     );
 
@@ -283,7 +290,7 @@ router.post("/:cid/purchase", async (req, res) => {
 
     return res.status(200).json({
       message: "Purchase completed successfully",
-      totalAmount: totalAmount,
+      purchaseTicket: newTicket,
       productsNotPurchased:
         productsNotPurchased.length > 0
           ? productsNotPurchased.map((item) => item.product._id)

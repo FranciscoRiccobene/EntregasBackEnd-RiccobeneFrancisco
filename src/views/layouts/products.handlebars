@@ -10,6 +10,9 @@
       <form action="/api/sessions/logout" method="post">
         <button type="submit">Logout</button>
       </form>
+      <a href="/carts/{{user.user.cart._id}}">
+        <button type="button">Ir al carrito</button>
+      </a>
     </div>
     <div>
       <ul>
@@ -26,7 +29,7 @@
             <a href="/products/{{this._id}}">Ver detalles</a>
             <br />
             <br />
-            <form action="/api/carts" method="POST">
+            <form class="addToCartForm">
               <input type="hidden" name="productId" value="{{this._id}}" />
               <input type="hidden" name="quantity" value="1" />
               <button type="submit">Agregar al carrito</button>
@@ -47,5 +50,6 @@
         <a href={{products.nextLink}}>Siguiente &gt;&gt;</a>
       {{/if}}
     </div>
+    <script src="/js/addToCart.js"></script>
   </body>
 </html>

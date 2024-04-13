@@ -12,12 +12,13 @@
       <p><strong>Precio:</strong> ${{product.price}}</p>
       <p><strong>Stock:</strong> {{product.stock}}</p>
       <p><strong>Categoría:</strong> {{product.category}}</p>
-      <form action="/api/carts" method="POST">
+      <form class="addToCartForm">
         <input type="hidden" name="productId" value="{{product._id}}" />
         <input type="hidden" name="quantity" value="1" />
         <button type="submit">Agregar al carrito</button>
       </form>
       <a href="/products">Volver a la lista de productos</a>
     </div>
+    <script src="/js/addToCart.js"></script>
   </body>
 </html>
