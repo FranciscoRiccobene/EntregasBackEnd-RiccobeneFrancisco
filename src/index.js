@@ -15,7 +15,7 @@ import initializePassport from "./config/passport.config.js";
 import router from "./routes/router.js";
 
 const app = express();
-const port = config.PORT;
+const port = config.PORT || 8080;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -53,7 +53,3 @@ router(app);
 app.listen(port, () => {
   logger.info(`Express server working on port: ${port}`);
 });
-
-export default (req, res) => {
-  app(req, res);
-};
