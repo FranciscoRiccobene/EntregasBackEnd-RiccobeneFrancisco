@@ -10,6 +10,7 @@
 
 npm-debug.log
 /logs/errors.log
+**/logs/
 
 # Archivo de registro creado por el sistema operativo
 
